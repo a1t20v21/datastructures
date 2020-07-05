@@ -71,7 +71,6 @@ int main(void){
     print_employee_details(peek(employee_queue));
 
     print_employee_details(dequeue(employee_queue));
-    print_employee_details(peek(employee_queue));
     print_employee_details(dequeue(employee_queue));
     print_employee_details(dequeue(employee_queue));
     print_employee_details(dequeue(employee_queue));
