@@ -1,4 +1,4 @@
-## Dinosaurs Problem - FB Interview
+## Dinosaurs Problem
 
 You will be supplied with two data files in CSV format. The first file contains statistics about various dinosaurs. The second file contains additional data.
 Given the following formula, 
