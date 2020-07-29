@@ -16,7 +16,7 @@ typedef struct tree_ {
 binary_tree * init_tree();
 int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char *orientation);
 int delete_tree_node(binary_tree *tree, void *data);
-void inorder_traversal(binary_tree *tree);
+int preorder_traversal(binary_tree *tree);
 tree_node * search_node(binary_tree *tree, char *data);
 void save_tree_in_file(char *parent_node, char *child_node, char *orientation);
 
@@ -41,49 +41,63 @@ tree_node * search_node(binary_tree *tree, char *data)
 {
     if(!tree || !tree->root || !data) return NULL;
     
-    /*only one node*/
+    /*only one node
     if(tree->root && tree->root->parent == NULL) {
         if(tree->root->data == data)
             return tree->root;
         else
             return NULL;
-    }
+    }*/
 
     tree_node *node = tree->root;
     tree_node *prev = node;
     
-    while(node->left != NULL)
+    while(node)
     {
         if(node->data == data)
             return node;
         else
-        {
-            node = node->left;
-        }
-    }
-
-    node = node->parent;
-    while(node->parent !=NULL )
-    {
-        if(node->right)
-            node = node->right;
-            if(node->data == data)
-                return node;
+        { 
             if(node->left)
             {
-                while(node->left != NULL)
+                node = node->left;
+            }
+            else
+            {
+                if(node->right)
                 {
-                    if(node->data == data)
-                        return node;
+                    node = node->right;
+                }
+                else
+                {
+                    if(node->parent == tree->root)
+                    {
+                        if(tree->root->right)
+                        {
+                            node = tree->right;
+                        }
+                    }
                     else
                     {
-                        node = node->left;
+                        while(node->parent != tree->root)
+                        {
+                            if(node->parent->right)
+                            {
+                                if(node->parent->right == node)
+                                    node = node->parent;
+                                else
+                                {
+                                    node = node->parent->right;
+                                    break;
+                                }
+                            }
+                            else
+                                node = node->parent; 
+                        }
                     }
                 }
-                node = node->parent;
             }
-        else
-            node = node->parent->parent;
+        }
     }
     
     return NULL;
@@ -158,9 +172,23 @@ int delete_tree_node(binary_tree *tree, void *data)
     //
 }
 
-void inorder_traversal(binary_tree *tree)
+int preorder_traversal(binary_tree *tree)
 {
-    //
+    char preorder_list[100];
+    int i = 0;
+
+    if(!tree || !tree->root) return -1;
+    
+    tree_node *root = tree->root;
+    tree_node *current = root;
+    
+    while(current->left != NULL)
+    {
+        strcpy(preorder_list[i++], current->data;
+        current = current->left;
+    }
+    
+    
 }
 
 void save_tree_in_file(char *parent_node, char *child_node, char *orientation)
