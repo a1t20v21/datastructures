@@ -1,7 +1,7 @@
-#include "binary_tree.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 typedef struct node_{
     char data[10];
     struct node_ *parent;
@@ -14,15 +14,16 @@ typedef struct tree_ {
 } binary_tree;
 
 binary_tree * init_tree();
-int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char *orientation)
+int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char *orientation);
 int delete_tree_node(binary_tree *tree, void *data);
-void list_tree_nodes(binary_tree *tree);
+void inorder_traversal(binary_tree *tree);
 tree_node * search_node(binary_tree *tree, char *data);
 void save_tree_in_file(char *parent_node, char *child_node, char *orientation);
 
-int main{
+int main()
+{
     binary_tree *tree = init_tree();
-    insert_tree_node(tree, NULL, A, NULL);
+    insert_tree_node(tree, NULL, "A", NULL);
     return 0;
 }
 
@@ -38,7 +39,7 @@ binary_tree * init_tree()
 
 tree_node * search_node(binary_tree *tree, char *data)
 {
-    if(!tree || !tree->root || !data) return -1;
+    if(!tree || !tree->root || !data) return NULL;
     
     /*only one node*/
     if(tree->root && tree->root->parent == NULL) {
@@ -96,9 +97,9 @@ int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char
         return -1;
     }
     
-    if(!node_name)
+    if(!data)
     {
-        perror("Empty node name");
+        perror("Empty node value");
         return -1;
     }
 
@@ -111,6 +112,7 @@ int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char
     /*First node*/
     if(!tree->root) {
         tree->root = node;
+        save_tree_in_file(parent_node_data, data, orientation);
         return 0;
     }
     
@@ -144,6 +146,7 @@ int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char
                 parent_node->right = node;
             }
             node->parent = parent_node;
+            save_tree_in_file(parent_node_data, data, orientation);
             return 0;
         }
     }
@@ -155,7 +158,7 @@ int delete_tree_node(binary_tree *tree, void *data)
     //
 }
 
-void list_tree_nodes(binary_tree *tree)
+void inorder_traversal(binary_tree *tree)
 {
     //
 }
@@ -165,8 +168,8 @@ void save_tree_in_file(char *parent_node, char *child_node, char *orientation)
     FILE *fp;
     fp = fopen("binary_tree.txt", "a");
     if(parent_node && orientation)
-        fprintf(fp, "%s,%s,%s", parent_node, child_node, orientation);
+        fprintf(fp, "%s,%s,%s\n", parent_node, child_node, orientation);
     else
-        fprintf(fp, "%s", child_node);
+        fprintf(fp, "%s\n", child_node);
     fclose(fp);
 }
