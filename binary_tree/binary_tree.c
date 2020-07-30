@@ -34,6 +34,37 @@ int main()
     insert_tree_node(tree, "F", "H", "L");
     insert_tree_node(tree, "F", "I", "R");
     preorder_traversal(tree);
+    free(tree);
+
+    binary_tree *tree1 = init_tree();
+    insert_tree_node(tree1, NULL, "P", NULL);
+    insert_tree_node(tree1, "P", "F", "L");
+    insert_tree_node(tree1, "F", "B", "L");
+    insert_tree_node(tree1, "F", "H", "R");
+    insert_tree_node(tree1, "H", "G", "L");
+    insert_tree_node(tree1, "P", "S", "R");
+    insert_tree_node(tree1, "S", "R", "L");
+    insert_tree_node(tree1, "S", "Y", "R");
+    insert_tree_node(tree1, "Y", "T", "L");
+    insert_tree_node(tree1, "T", "W", "R");
+    insert_tree_node(tree1, "Y", "Z", "R");
+    preorder_traversal(tree1);
+    free(tree1);
+
+    binary_tree *tree2 = init_tree();
+    insert_tree_node(tree2, NULL, "A", NULL);
+    insert_tree_node(tree2, "A", "B", "L");
+    insert_tree_node(tree2, "B", "D", "L");
+    insert_tree_node(tree2, "D", "G", "L");
+    insert_tree_node(tree2, "G", "K", "L");
+    insert_tree_node(tree2, "D", "H", "R");
+    insert_tree_node(tree2, "H", "L", "L");
+    insert_tree_node(tree2, "H", "M", "R");
+    insert_tree_node(tree2, "A", "C", "R");
+    insert_tree_node(tree2, "C", "E", "L");
+    preorder_traversal(tree2);
+    free(tree2);
+
     return 0;
 }
 
@@ -58,10 +89,10 @@ tree_node * search_node(binary_tree *tree, char *data)
     }
 
     tree_node *node = tree->root;
-    tree_node *prev = node;
-
+    
     while(node)
     {
+        
         if(strcmp(node->data, data) == 0)
         {
             return node;
@@ -89,7 +120,6 @@ tree_node * search_node(binary_tree *tree, char *data)
                     }
                     else
                     {
-                        node = node->parent;
                         while(node != tree->root)
                         {
                             if(node->parent->right)
@@ -290,6 +320,7 @@ int preorder_traversal(binary_tree *tree)
     {
         printf("%s ", preorder_list[j]);
     }
+    printf("\n");
     
     return 0;
 }
