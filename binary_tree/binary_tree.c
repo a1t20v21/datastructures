@@ -2,71 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct node_{
-    char data[10];
-    struct node_ *parent;
-    struct node_ *left;
-    struct node_ *right;
-} tree_node;
-
-typedef struct tree_ {
-    tree_node *root;
-    int size;
-} binary_tree;
-
-binary_tree * init_tree();
-int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char *orientation);
-int delete_tree_node(binary_tree *tree, void *data);
-int preorder_traversal(binary_tree *tree);
-tree_node * search_node(binary_tree *tree, char *data);
-void save_tree_in_file(char *parent_node, char *child_node, char *orientation);
-
-int main()
-{
-    binary_tree *tree = init_tree();
-    insert_tree_node(tree, NULL, "A", NULL);
-    insert_tree_node(tree, "A", "B", "L");
-    insert_tree_node(tree, "B", "D", "L");
-    insert_tree_node(tree, "A", "C", "R");
-    insert_tree_node(tree, "C", "E", "L");
-    insert_tree_node(tree, "E", "G", "R");
-    insert_tree_node(tree, "C", "F", "R");
-    insert_tree_node(tree, "F", "H", "L");
-    insert_tree_node(tree, "F", "I", "R");
-    preorder_traversal(tree);
-    free(tree);
-
-    binary_tree *tree1 = init_tree();
-    insert_tree_node(tree1, NULL, "P", NULL);
-    insert_tree_node(tree1, "P", "F", "L");
-    insert_tree_node(tree1, "F", "B", "L");
-    insert_tree_node(tree1, "F", "H", "R");
-    insert_tree_node(tree1, "H", "G", "L");
-    insert_tree_node(tree1, "P", "S", "R");
-    insert_tree_node(tree1, "S", "R", "L");
-    insert_tree_node(tree1, "S", "Y", "R");
-    insert_tree_node(tree1, "Y", "T", "L");
-    insert_tree_node(tree1, "T", "W", "R");
-    insert_tree_node(tree1, "Y", "Z", "R");
-    preorder_traversal(tree1);
-    free(tree1);
-
-    binary_tree *tree2 = init_tree();
-    insert_tree_node(tree2, NULL, "A", NULL);
-    insert_tree_node(tree2, "A", "B", "L");
-    insert_tree_node(tree2, "B", "D", "L");
-    insert_tree_node(tree2, "D", "G", "L");
-    insert_tree_node(tree2, "G", "K", "L");
-    insert_tree_node(tree2, "D", "H", "R");
-    insert_tree_node(tree2, "H", "L", "L");
-    insert_tree_node(tree2, "H", "M", "R");
-    insert_tree_node(tree2, "A", "C", "R");
-    insert_tree_node(tree2, "C", "E", "L");
-    preorder_traversal(tree2);
-    free(tree2);
-
-    return 0;
-}
+#include "binary_tree.h"
 
 binary_tree * init_tree()
 {
@@ -144,6 +80,95 @@ tree_node * search_node(binary_tree *tree, char *data)
     return NULL;
 }
 
+int inorder_traversal(binary_tree *tree)
+{
+	if(!tree || !tree->root) return -1;
+
+	char inorder_list[100][10];
+	int j = 0;
+
+	if(tree->root->left)
+	{
+		tree_node *left_most = get_left_most_node(tree->root);
+		strcpy(inorder_list[j++], left_most->data);
+		int i = 0;
+		tree_node *next_inorder_succ = get_next_inorder_successer(left_most);
+		while(next_inorder_succ)
+		{	
+			strcpy(inorder_list[j++], next_inorder_succ->data);
+			next_inorder_succ = get_next_inorder_successer(next_inorder_succ);
+		}
+	}
+
+	for(int k = 0; k < j; k++)
+	{
+		printf("%s ", inorder_list[k]);
+	}
+	printf("\n");
+
+	return 0;
+}
+
+tree_node * get_left_most_node(tree_node *node)
+{
+	if(!node || !node->left) return NULL;
+	
+	while(node->left)
+	{
+		node = node->left;
+	}
+	return node;
+}
+
+tree_node * get_next_inorder_successer(tree_node *node)
+{
+	
+	if(!node) return NULL;
+	/*given node is the root node*/
+	if(!node->parent)
+		if(node->right->left)
+			return get_left_most_node(node->right);
+		else
+			return node->right;
+
+	/*node is a left child of its parent*/
+	if(node == node->parent->left)
+	{
+		if(!node->right)
+			return node->parent;
+		else
+		{
+			if(node->right->left)
+				return get_left_most_node(node->right);
+			else 
+				return node->right;
+		}
+	}
+
+	/*node is a right child of its parent*/
+	if(node == node->parent->right)
+	{
+		if(node->right)
+		{
+			if(node->right->left)
+				return get_left_most_node(node->right);
+			else
+				return node->right;
+		}
+	}
+	
+	tree_node *gp = node->parent->parent;
+	tree_node *parent = node->parent;
+	
+	while(gp && gp->left != parent)
+	{
+		parent = gp;
+		gp = gp->parent;
+	}
+	
+	return	gp;
+}
+
 int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char *orientation)
 {
     if(!tree)
@@ -168,7 +193,6 @@ int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char
     if(!tree->root) {
         tree->root = node;
         tree->size++;
-        save_tree_in_file(parent_node_data, data, orientation);
         return 0;
     }
 
@@ -176,7 +200,7 @@ int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char
     if(parent_node)
     {
         tree_node *temp;
-        if(orientation == "L")
+        if(strcmp(orientation, "L") == 0)
         {
             if(parent_node->left)
             {
@@ -209,7 +233,6 @@ int insert_tree_node(binary_tree *tree, char *parent_node_data, char *data, char
                 node->parent = parent_node;
                 tree->size++;
             }
-            save_tree_in_file(parent_node_data, data, orientation);
             return 0;
         }
     }
@@ -325,13 +348,3 @@ int preorder_traversal(binary_tree *tree)
     return 0;
 }
 
-void save_tree_in_file(char *parent_node, char *child_node, char *orientation)
-{
-    FILE *fp;
-    fp = fopen("binary_tree.txt", "a+");
-    if(parent_node && orientation)
-        fprintf(fp, "%s,%s,%s\n", parent_node, child_node, orientation);
-    else
-        fprintf(fp, "%s\n", child_node);
-    fclose(fp);
-}
